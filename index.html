@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Meme Explorer & Generator</title>
+  
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  
+  <!-- Neon Pulse Design System Configuration -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-secondary-fixed-variant": "#00655b",
+            "error-container": "#a70138",
+            "inverse-primary": "#7744b5",
+            "surface-dim": "#0e0e0e",
+            "on-primary-fixed": "#000000",
+            "surface-variant": "#262626",
+            "error-dim": "#d73357",
+            "surface-bright": "#2c2c2c",
+            "on-surface": "#ffffff",
+            "outline": "#767575",
+            "secondary-container": "#006a60",
+            "tertiary-fixed": "#ff8db2",
+            "primary-fixed": "#bc87fe",
+            "surface-tint": "#c799ff",
+            "primary": "#c799ff",
+            "background": "#0e0e0e",
+            "on-tertiary-fixed": "#380019",
+            "on-tertiary-container": "#59002b",
+            "on-tertiary": "#6a0936",
+            "surface-container-low": "#131313",
+            "on-secondary": "#005b51",
+            "tertiary-dim": "#ef77a0",
+            "surface-container": "#1a1a1a",
+            "secondary": "#4af8e3",
+            "on-surface-variant": "#adaaaa",
+            "secondary-dim": "#33e9d5",
+            "on-error-container": "#ffb2b9",
+            "inverse-on-surface": "#565555",
+            "inverse-surface": "#fcf9f8",
+            "tertiary": "#ff97b8",
+            "on-tertiary-fixed-variant": "#70103b",
+            "on-background": "#ffffff",
+            "surface": "#0e0e0e",
+            "surface-container-high": "#20201f",
+            "tertiary-fixed-dim": "#f57ca5",
+            "on-secondary-fixed": "#00463f",
+            "tertiary-container": "#fc81ab",
+            "secondary-fixed-dim": "#33e9d5",
+            "on-secondary-container": "#dcfff8",
+            "outline-variant": "#484847",
+            "secondary-fixed": "#4af8e3",
+            "on-error": "#490013",
+            "surface-container-highest": "#262626",
+            "surface-container-lowest": "#000000",
+            "on-primary-fixed-variant": "#40007a",
+            "on-primary": "#440080",
+            "error": "#ff6e84",
+            "on-primary-container": "#340064",
+            "primary-container": "#bc87fe",
+            "primary-fixed-dim": "#af7aef",
+            "primary-dim": "#ba85fb"
+          },
+          fontFamily: {
+            "headline": ["Plus Jakarta Sans", "sans-serif"],
+            "body": ["Inter", "sans-serif"],
+            "label": ["Inter", "sans-serif"]
+          },
+          borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+
+  <!-- TopAppBar -->
+  <header class="fixed top-0 w-full z-50 bg-neutral-950/80 backdrop-blur-xl shadow-[0_20_40px_rgba(0,0,0,0.4)]">
+    <div class="flex items-center justify-between px-6 h-20 w-full max-w-[1440px] mx-auto">
+      <div class="flex items-center gap-4">
+        <span class="material-symbols-outlined text-purple-400 active:scale-95 duration-200 cursor-pointer" data-icon="bolt">bolt</span>
+        <h1 class="text-2xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-purple-400 to-purple-600 font-headline">NEON PULSE</h1>
+      </div>
+      <div class="flex items-center gap-6">
+        <div class="hidden md:flex items-center bg-surface-container-low rounded-full px-4 py-2 border border-outline-variant/15 focus-within:border-primary/20 transition-all">
+          <span class="material-symbols-outlined text-on-surface-variant mr-2" data-icon="search">search</span>
+          <input id="searchInputDesktop" class="bg-transparent border-none focus:ring-0 text-sm w-64 placeholder:text-on-surface-variant font-label" placeholder="Search the electric abyss..." type="text"/>
+        </div>
+        <span id="mobileSearchBtn" class="md:hidden material-symbols-outlined text-neutral-400 hover:bg-neutral-800/50 transition-colors duration-300 p-2 rounded-full cursor-pointer active:scale-95" data-icon="search">search</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Layout Container -->
+  <div class="flex max-w-[1440px] mx-auto pt-24 pb-24 md:pb-8">
+
+    <!-- NavigationDrawer (Desktop Only) -->
+    <aside class="fixed left-0 top-20 h-[calc(100vh-5rem)] p-8 w-72 hidden lg:flex flex-col bg-neutral-950">
+      <nav class="flex flex-col gap-2">
+        <div class="mb-8">
+          <span class="text-purple-400 text-lg font-headline font-extrabold tracking-widest">EDITORIAL</span>
+        </div>
+        <a class="flex items-center gap-4 py-3 px-4 rounded-lg text-purple-400 font-bold border-r-4 border-purple-500 bg-gradient-to-r from-purple-500/5 to-transparent transition-all duration-300" href="#">
+          <span class="material-symbols-outlined" data-icon="explore">explore</span>
+          <span class="font-headline">Explore</span>
+        </a>
+        <a class="flex items-center gap-4 py-3 px-4 rounded-lg text-neutral-500 hover:text-neutral-200 hover:bg-neutral-800/40 transition-all duration-300" href="#">
+          <span class="material-symbols-outlined" data-icon="whatshot">whatshot</span>
+          <span class="font-headline">Trending</span>
+        </a>
+        <a class="flex items-center gap-4 py-3 px-4 rounded-lg text-neutral-500 hover:text-neutral-200 hover:bg-neutral-800/40 transition-all duration-300" id="sortBtn" href="#">
+          <span class="material-symbols-outlined" data-icon="sort_by_alpha">sort_by_alpha</span>
+          <span class="font-headline text-sm">Sort A-Z</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-1 px-6 lg:ml-72 lg:px-12">
+      <!-- Vibe Header -->
+      <section class="mb-12">
+        <div class="flex flex-col md:flex-row md:items-end gap-2 md:gap-4 ml-0 md:ml-8">
+          <h2 class="text-5xl md:text-7xl font-headline font-black tracking-tighter uppercase text-on-surface">Daily Pulse</h2>
+          <div class="h-1 w-24 bg-primary mb-2 md:mb-4"></div>
+          <p class="text-on-surface-variant font-label tracking-widest uppercase text-xs mb-1 md:mb-4">Curated Chaos</p>
+        </div>
+        
+        <!-- Mobile Search Input (Visible only when toggled on mobile) -->
+        <div id="mobileSearchContainer" class="hidden md:hidden mt-4 w-full flex items-center bg-surface-container-low rounded-full px-4 py-2 border border-outline-variant/15 focus-within:border-primary/20 transition-all">
+          <span class="material-symbols-outlined text-on-surface-variant mr-2" data-icon="search">search</span>
+          <input id="searchInputMobile" class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-on-surface-variant font-label outline-none" placeholder="Search memes..." type="text"/>
+        </div>
+        
+        <!-- Error State Container (Hidden by default) -->
+         <div id="errorContainer" class="hidden mt-6 bg-error-container/20 border border-error-container p-4 rounded-lg items-center gap-3">
+             <span class="material-symbols-outlined text-error" data-icon="error_outline">error_outline</span>
+             <div>
+                <h3 class="font-bold text-error">Failed to load the chaos</h3>
+                <p class="text-sm text-error/80" id="errorMessage">Please try refreshing the page.</p>
+             </div>
+         </div>
+      </section>
+
+      <!-- Category Chips -->
+      <section class="mb-10 overflow-x-auto pb-4 scrollbar-hide">
+        <div class="flex gap-3 whitespace-nowrap">
+          <button class="px-6 py-2 rounded-full bg-primary text-on-primary font-bold text-sm tracking-wide shadow-lg shadow-primary/20">All Flux</button>
+          <button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:text-primary transition-colors border border-outline-variant/15">Trending</button>
+          <button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:text-primary transition-colors border border-outline-variant/15">Gaming</button>
+          <button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:text-primary transition-colors border border-outline-variant/15">Cyberpunk</button>
+        </div>
+      </section>
+
+      <!-- Meme Grid Container -->
+      <div id="memeGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+        <!-- Skeleton Loaders (Displayed initially) -->
+        <div class="skeleton-card bg-surface-container rounded-lg p-6 animate-pulse border border-outline-variant/5">
+          <div class="w-full h-64 bg-surface-container-highest rounded-lg mb-4"></div>
+          <div class="h-6 bg-surface-container-highest rounded w-3/4 mb-2"></div>
+          <div class="h-4 bg-surface-container-highest rounded w-1/2"></div>
+        </div>
+        <div class="skeleton-card bg-surface-container rounded-lg p-6 animate-pulse border border-outline-variant/5 hidden md:block">
+          <div class="w-full h-80 bg-surface-container-highest rounded-lg mb-4"></div>
+          <div class="h-6 bg-surface-container-highest rounded w-2/3 mb-2"></div>
+          <div class="h-4 bg-surface-container-highest rounded w-1/3"></div>
+        </div>
+        <div class="skeleton-card bg-surface-container rounded-lg p-6 animate-pulse border border-outline-variant/5 hidden lg:block">
+          <div class="w-full h-64 bg-surface-container-highest rounded-lg mb-4"></div>
+          <div class="h-6 bg-surface-container-highest rounded w-3/4 mb-2"></div>
+          <div class="h-4 bg-surface-container-highest rounded w-1/2"></div>
+        </div>
+      </div>
+      
+      <!-- Load More Button Container -->
+      <div id="loadMoreContainer" class="hidden mt-12 flex justify-center w-full">
+         <button id="loadMoreBtn" class="px-8 py-3 rounded-full bg-surface-container-highest text-primary font-bold text-sm hover:bg-surface-container-high hover:shadow-lg hover:shadow-primary/10 transition-all border border-primary/20">Load More Pulse...</button>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- BottomNavBar (Mobile Only) -->
+  <nav class="fixed bottom-0 left-0 w-full flex justify-around items-center py-4 px-6 bg-neutral-900/90 backdrop-blur-lg md:hidden z-50 shadow-[0_-10px_30px_rgba(199,153,255,0.08)]">
+    <a class="flex items-center justify-center bg-purple-500/10 text-purple-400 rounded-full p-3 active:scale-90 duration-150" href="#">
+      <span class="material-symbols-outlined" data-icon="explore" data-weight="fill" style="font-variation-settings: 'FILL' 1;">explore</span>
+    </a>
+    <a class="flex items-center justify-center text-neutral-500 p-3 hover:text-purple-300 transition-all active:scale-90 duration-150" href="#">
+      <span class="material-symbols-outlined" data-icon="whatshot">whatshot</span>
+    </a>
+    <a class="flex items-center justify-center text-neutral-500 p-3 hover:text-purple-300 transition-all active:scale-90 duration-150" id="sortBtnMobile" href="#">
+      <span class="material-symbols-outlined" data-icon="sort_by_alpha">sort_by_alpha</span>
+    </a>
+  </nav>
+
+  <!-- FAB -->
+  <button class="fixed bottom-24 right-6 md:bottom-10 md:right-10 w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary flex items-center justify-center shadow-[0px_20px_40px_rgba(0,0,0,0.4)] hover:shadow-primary/30 transition-shadow z-40 active:scale-90 duration-150">
+    <span class="material-symbols-outlined text-3xl font-bold" data-icon="add">add</span>
+  </button>
+
+  <script src="script.js"></script>
+</body>
+</html>

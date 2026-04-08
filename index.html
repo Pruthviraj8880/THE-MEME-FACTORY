@@ -15,57 +15,20 @@
       theme: {
         extend: {
           colors: {
-            "on-secondary-fixed-variant": "#00655b",
-            "error-container": "#a70138",
-            "inverse-primary": "#7744b5",
-            "surface-dim": "#0e0e0e",
-            "on-primary-fixed": "#000000",
-            "surface-variant": "#262626",
-            "error-dim": "#d73357",
-            "surface-bright": "#2c2c2c",
-            "on-surface": "#ffffff",
-            "outline": "#767575",
-            "secondary-container": "#006a60",
-            "tertiary-fixed": "#ff8db2",
-            "primary-fixed": "#bc87fe",
-            "surface-tint": "#c799ff",
             "primary": "#c799ff",
-            "background": "#0e0e0e",
-            "on-tertiary-fixed": "#380019",
-            "on-tertiary-container": "#59002b",
-            "on-tertiary": "#6a0936",
-            "surface-container-low": "#131313",
-            "on-secondary": "#005b51",
-            "tertiary-dim": "#ef77a0",
-            "surface-container": "#1a1a1a",
-            "secondary": "#4af8e3",
-            "on-surface-variant": "#adaaaa",
-            "secondary-dim": "#33e9d5",
-            "on-error-container": "#ffb2b9",
-            "inverse-on-surface": "#565555",
-            "inverse-surface": "#fcf9f8",
-            "tertiary": "#ff97b8",
-            "on-tertiary-fixed-variant": "#70103b",
-            "on-background": "#ffffff",
-            "surface": "#0e0e0e",
-            "surface-container-high": "#20201f",
-            "tertiary-fixed-dim": "#f57ca5",
-            "on-secondary-fixed": "#00463f",
-            "tertiary-container": "#fc81ab",
-            "secondary-fixed-dim": "#33e9d5",
-            "on-secondary-container": "#dcfff8",
-            "outline-variant": "#484847",
-            "secondary-fixed": "#4af8e3",
-            "on-error": "#490013",
-            "surface-container-highest": "#262626",
-            "surface-container-lowest": "#000000",
-            "on-primary-fixed-variant": "#40007a",
-            "on-primary": "#440080",
-            "error": "#ff6e84",
-            "on-primary-container": "#340064",
+            "background": "var(--background)",
+            "surface": "var(--surface)",
+            "on-surface": "var(--on-surface)",
+            "on-surface-variant": "var(--on-surface-variant)",
+            "surface-container": "var(--surface-container)",
+            "surface-container-low": "var(--surface-container-low)",
+            "surface-container-high": "var(--surface-container-high)",
+            "surface-container-highest": "var(--surface-container-highest)",
+            "outline-variant": "var(--outline-variant)",
             "primary-container": "#bc87fe",
-            "primary-fixed-dim": "#af7aef",
-            "primary-dim": "#ba85fb"
+            "secondary": "#4af8e3",
+            "tertiary": "#ff97b8",
+            "error": "#ff6e84",
           },
           fontFamily: {
             "headline": ["Plus Jakarta Sans", "sans-serif"],
@@ -81,13 +44,16 @@
 <body class="bg-background text-on-surface font-body selection:bg-primary/30">
 
   <!-- TopAppBar -->
-  <header class="fixed top-0 w-full z-50 bg-neutral-950/80 backdrop-blur-xl shadow-[0_20_40px_rgba(0,0,0,0.4)]">
+  <header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/5 shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
     <div class="flex items-center justify-between px-6 h-20 w-full max-w-[1440px] mx-auto">
       <div class="flex items-center gap-4">
         <span class="material-symbols-outlined text-purple-400 active:scale-95 duration-200 cursor-pointer" data-icon="bolt">bolt</span>
         <h1 class="text-2xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-purple-400 to-purple-600 font-headline">NEON PULSE</h1>
       </div>
-      <div class="flex items-center gap-6">
+      <div class="flex items-center gap-4 md:gap-6">
+        <button id="themeToggle" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high transition-colors duration-300 p-2 rounded-full cursor-pointer active:scale-95" title="Toggle Theme">
+          <span class="material-symbols-outlined pointer-events-none" style="font-variation-settings: 'FILL' 1;">light_mode</span>
+        </button>
         <div class="hidden md:flex items-center bg-surface-container-low rounded-full px-4 py-2 border border-outline-variant/15 focus-within:border-primary/20 transition-all">
           <span class="material-symbols-outlined text-on-surface-variant mr-2" data-icon="search">search</span>
           <input id="searchInputDesktop" class="bg-transparent border-none focus:ring-0 text-sm w-64 placeholder:text-on-surface-variant font-label" placeholder="Search the electric abyss..." type="text"/>
@@ -149,11 +115,11 @@
 
       <!-- Category Chips -->
       <section class="mb-10 overflow-x-auto pb-4 scrollbar-hide">
-        <div class="flex gap-3 whitespace-nowrap">
-          <button class="px-6 py-2 rounded-full bg-primary text-on-primary font-bold text-sm tracking-wide shadow-lg shadow-primary/20">All Flux</button>
-          <button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:text-primary transition-colors border border-outline-variant/15">Trending</button>
-          <button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:text-primary transition-colors border border-outline-variant/15">Gaming</button>
-          <button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:text-primary transition-colors border border-outline-variant/15">Cyberpunk</button>
+        <div id="categoryChips" class="flex gap-3 whitespace-nowrap">
+          <button data-category="all" class="category-btn px-6 py-2 rounded-full bg-primary text-on-primary font-bold text-sm tracking-wide shadow-lg shadow-primary/20 transition-all">All Flux</button>
+          <button data-category="gaming" class="category-btn px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:text-primary transition-all border border-outline-variant/15">Gaming</button>
+          <button data-category="classic" class="category-btn px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:text-primary transition-all border border-outline-variant/15">Classic</button>
+          <button data-category="cyberpunk" class="category-btn px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:text-primary transition-all border border-outline-variant/15">Cyberpunk</button>
         </div>
       </section>
 

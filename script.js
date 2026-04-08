@@ -16,8 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let allMemes = [];
   let displayedMemes = [];
   let isSortedAlpha = false;
+  let currentCategory = "all";
+  let likedMemes = new Set(JSON.parse(localStorage.getItem("likedMemes") || "[]"));
   const memesPerPage = 12;
   let currentPage = 1;
+  let isDarkMode = document.documentElement.classList.contains("dark");
 
   // Imgflip API URL
   const GET_MEMES_API = "https://api.imgflip.com/get_memes";
@@ -33,9 +36,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const jsonStr = await response.json();
       
       if (jsonStr.success) {
-        allMemes = jsonStr.data.memes;
-        // Keep a copy of initial order
-        allMemes = allMemes.map(meme => ({ ...meme }));
+        // Map and enrich meme data with categories and initial likes using .map (HOF)
+        allMemes = jsonStr.data.memes.map((meme, index) => {
+            let category = "classic";
+            const name = meme.name.toLowerCase();
+            if (name.includes("game") || name.includes("mario") || name.includes("minecraft") || index % 3 === 0) category = "gaming";
+            else if (name.includes("cyber") || name.includes("futur") || name.includes("neon") || index % 7 === 0) category = "cyberpunk";
+            
+            return {
+                ...meme,
+                category,
+                baseLikes: Math.floor(Math.random() * 1000) + 100
+            };
+        });
         
         // Hide Skeleton and render first batch
         memeGrid.innerHTML = "";
@@ -52,9 +65,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // Create Meme Card DOM Element using Neon Pulse Design
   const createMemeCard = (meme, index) => {
     // Generate some fake "social" numbers to match the design vibe
-    const likes = (Math.random() * 50 + 1).toFixed(1) + "k";
     const comments = Math.floor(Math.random() * 900 + 100);
     const author = "@" + meme.name.substring(0, 8).replace(/\s+/g, '').toLowerCase() + Math.floor(Math.random() * 99);
+    
+    const isLiked = likedMemes.has(meme.id);
+    const displayedLikes = (meme.baseLikes + (isLiked ? 1 : 0)).toLocaleString();
     
     // Some logic to vary the card aspect ratio slightly like the mockup
     const aspectClass = index % 4 === 1 ? "aspect-square" : "aspect-[4/5]";
@@ -76,9 +91,9 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <div class="flex items-center justify-between mt-auto pt-2">
           <div class="flex gap-4">
-            <button class="flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors active:scale-90">
-              <span class="material-symbols-outlined text-xl" data-icon="favorite">favorite</span>
-              <span class="text-sm font-label font-semibold">${likes}</span>
+            <button class="like-btn flex items-center gap-1.5 ${isLiked ? 'text-primary' : 'text-on-surface-variant'} hover:text-primary transition-colors active:scale-90" data-id="${meme.id}" data-base="${meme.baseLikes}">
+              <span class="material-symbols-outlined text-xl" data-icon="favorite" style="font-variation-settings: 'FILL' ${isLiked ? 1 : 0}">favorite</span>
+              <span class="like-count text-sm font-label font-semibold">${displayedLikes}</span>
             </button>
             <button class="flex items-center gap-1.5 text-on-surface-variant hover:text-secondary transition-colors active:scale-90">
               <span class="material-symbols-outlined text-xl" data-icon="mode_comment">mode_comment</span>
@@ -95,10 +110,16 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const applyFiltersAndRender = () => {
-    let query = searchInputDesktop.value.toLowerCase() || searchInputMobile.value.toLowerCase();
+    let query = (searchInputDesktop.value || searchInputMobile.value || "").toLowerCase();
     
-    let filtered = allMemes.filter((meme) => meme.name.toLowerCase().includes(query));
-    
+    // Core Logic: Chaining HOFs (filter, sort)
+    let filtered = allMemes
+        .filter(meme => {
+            const matchesQuery = meme.name.toLowerCase().includes(query);
+            const matchesCategory = currentCategory === "all" || meme.category === currentCategory;
+            return matchesQuery && matchesCategory;
+        });
+
     if (isSortedAlpha) {
       filtered.sort((a, b) => a.name.localeCompare(b.name));
     }
@@ -141,6 +162,71 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Events
+  // New Event Listeners
+  
+  // Category Chips
+  document.getElementById("categoryChips").addEventListener("click", (e) => {
+    const btn = e.target.closest(".category-btn");
+    if (!btn) return;
+    
+    currentCategory = btn.dataset.category;
+    
+    // Update UI active state using HOF
+    Array.from(document.querySelectorAll(".category-btn")).forEach(b => {
+        if (b.dataset.category === currentCategory) {
+            b.classList.replace("bg-surface-container-high", "bg-primary");
+            b.classList.replace("text-on-surface-variant", "text-on-primary");
+            b.classList.add("shadow-lg", "shadow-primary/20", "font-bold");
+        } else {
+            b.classList.replace("bg-primary", "bg-surface-container-high");
+            b.classList.replace("text-on-primary", "text-on-surface-variant");
+            b.classList.remove("shadow-lg", "shadow-primary/20", "font-bold");
+        }
+    });
+    
+    applyFiltersAndRender();
+  });
+
+  // Like Toggle Interaction
+  memeGrid.addEventListener("click", (e) => {
+    const likeBtn = e.target.closest(".like-btn");
+    if (!likeBtn) return;
+    
+    const memeId = likeBtn.dataset.id;
+    if (likedMemes.has(memeId)) {
+        likedMemes.delete(memeId);
+    } else {
+        likedMemes.add(memeId);
+    }
+    
+    localStorage.setItem("likedMemes", JSON.stringify([...likedMemes]));
+    
+    // Update just the specific icon and count for performance
+    const icon = likeBtn.querySelector(".material-symbols-outlined");
+    const count = likeBtn.querySelector(".like-count");
+    const isLiked = likedMemes.has(memeId);
+    
+    icon.style.fontVariationSettings = isLiked ? "'FILL' 1" : "'FILL' 0";
+    icon.classList.toggle("text-primary", isLiked);
+    
+    // Simple mock increment/decrement
+    const baseCount = parseInt(likeBtn.dataset.base) || 0;
+    count.textContent = (baseCount + (isLiked ? 1 : 0)).toLocaleString();
+  });
+
+  // Theme Toggle
+  const themeToggle = document.getElementById("themeToggle");
+  themeToggle.addEventListener("click", () => {
+    isDarkMode = !isDarkMode;
+    document.documentElement.classList.toggle("dark", isDarkMode);
+    
+    const icon = themeToggle.querySelector("span");
+    icon.textContent = isDarkMode ? "light_mode" : "dark_mode";
+    
+    // Smooth transition
+    document.body.classList.add("transition-colors", "duration-500");
+  });
+
   searchInputDesktop.addEventListener("input", applyFiltersAndRender);
   searchInputMobile.addEventListener("input", applyFiltersAndRender);
   
@@ -165,8 +251,10 @@ document.addEventListener("DOMContentLoaded", () => {
       icons.forEach(icon => {
           if(isSortedAlpha) {
               icon.style.color = 'var(--primary)';
+              icon.textContent = 'sort_by_alpha';
           } else {
               icon.style.color = '';
+              icon.textContent = 'sort_by_alpha';
           }
       });
       

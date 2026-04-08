@@ -2,8 +2,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 /* Base Styles & Utilities */
+:root {
+  --primary: #c799ff;
+  --background: #f4f4f5;
+  --surface: #ffffff;
+  --on-surface: #0e0e0e;
+  --on-surface-variant: #525252;
+  --surface-container: #ebebeb;
+  --surface-container-low: #f1f1f1;
+  --surface-container-high: #e5e5e5;
+  --surface-container-highest: #dadada;
+  --outline-variant: rgba(0,0,0,0.1);
+}
+
+.dark {
+  --background: #0e0e0e;
+  --surface: #0e0e0e;
+  --on-surface: #ffffff;
+  --on-surface-variant: #adaaaa;
+  --surface-container: #1a1a1a;
+  --surface-container-low: #131313;
+  --surface-container-high: #20201f;
+  --surface-container-highest: #262626;
+  --outline-variant: rgba(255,255,255,0.1);
+}
+
 body {
   min-height: max(884px, 100dvh);
+  background-color: var(--background);
+  color: var(--on-surface);
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 .material-symbols-outlined {

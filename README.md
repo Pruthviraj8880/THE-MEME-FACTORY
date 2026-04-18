@@ -41,10 +41,5 @@ The API provides a list of popular meme templates including their images and nam
 3. Open index.html in your browser
 
 
-## 📅 Milestone
-
-This project is part of Milestone 1 (Project Setup and Planning)
-
----
 
 ✨ Built for learning and fun!
